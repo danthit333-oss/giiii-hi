@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sơ Đồ Tư Duy Hệ Thống Honeypot AI & SOC</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #181c24;
+      color: #e2e8f0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 12px 24px;
+      background: rgba(30, 36, 48, 0.85);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #2d3748;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+    h1 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #63b3ed;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge {
+      font-size: 0.75rem;
+      background: #2b6cb0;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-weight: 500;
+    }
+    .hint {
+      font-size: 0.82rem;
+      color: #a0aec0;
+    }
+    #mindmap-container {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    svg#mindmap {
+      width: 100%;
+      height: 100%;
+    }
+    /* Custom style giống hệt ảnh mẫu */
+    .markmap-node text {
+      fill: #e2e8f0 !important;
+      font-size: 13.5px !important;
+      font-weight: 500 !important;
+    }
+    .markmap-node-circle {
+      fill: #4a5568 !important;
+      stroke: #718096 !important;
+    }
+    .markmap-link {
+      stroke: #4a5568 !important;
+      stroke-width: 1.5px !important;
+    }
+  </style>
+  <!-- D3.js and Markmap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.15.4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.15.4/dist/browser/index.js"></script>
+</head>
+<body>
+
+  <header>
+    <h1>
+      <span>🛡️ Sơ Đồ Tư Duy: Honeypot AI & SOC Project</span>
+      <span class="badge">9 Parts Toàn Diện</span>
+    </h1>
+    <div class="hint">💡 <b>Mẹo:</b> Nhấp chuột vào các nút tròn để <b>Mở rộng / Thu gọn</b> nhánh | Cuộn chuột để <b>Phóng to / Thu nhỏ</b> | Kéo thả để <b>Di chuyển</b></div>
+  </header>
+
+  <div id="mindmap-container">
+    <svg id="mindmap"></svg>
+  </div>
+
+  <script>
+    const markdownData = `
+# 🛡️ Honeypot AI & SOC Project
+
+## 🕸️ Bẫy Mồi Nhử (Lure Layer)
+### Part 02: Web Honeypot (Flask)
+#### Giao diện Cổng Dịch vụ công
+#### Lỗ hổng SQL Injection (SQLi)
+#### Lỗ hổng Cross-Site Scripting (XSS)
+#### Lỗ hổng Tải tệp Unrestricted Upload
+#### Lỗ hổng Path Traversal (/etc/passwd)
+#### Thư mục cách ly Quarantine
+### Part 08: SSH Honeypot (Cowrie)
+#### Cổng SSH mô phỏng: 2222
+#### Ghi nhận từng ký tự gõ Shell
+#### Bắt giữ mã độc tải về máy
+#### Proxy phân tách HAProxy
+
+## 🧠 Trí Tuệ Nhân Tạo (AI / ML)
+### Part 01: Huấn luyện XGBoost
+#### Tập dữ liệu chuẩn CICIoT2023
+#### Trích xuất 47 đặc trưng luồng mạng
+#### Thuật toán Reservoir Sampling
+#### 300 Cây quyết định Histogram (Hist)
+#### File mô hình nhị phân .ubj
+### 7 Lớp Phân Loại An Ninh
+#### Benign (Lưu lượng an toàn)
+#### DDoS (Tấn công từ chối dịch vụ)
+#### DoS (Tấn công từ chối dịch vụ đơn)
+#### BruteForce (Dò quét mật khẩu)
+#### Recon (Quét cổng mạng / Thăm dò)
+#### Mirai (Mã độc mạng ma Botnet)
+#### Spoofing (Giả mạo IP / ARP)
+
+## 👁️ Cảm Biến Thời Gian Thực
+### Part 05: Real-time IDS Sensor
+#### Suricata Packet Sniffer
+#### LiveFlowSensor Engine
+#### FlowAccumulator (Tính toán 47 chỉ số)
+#### Phán đoán AI trong mili-giây
+#### Đẩy cảnh báo về Part 03 Ingestion
+
+## ⚡ Trung Tâm Xử Lý & Dữ Liệu
+### Part 03: FastAPI Logging Backend
+#### REST API Ingestion tiếp nhận đa nguồn
+#### Chuẩn hóa Khung MITRE ATT&CK
+#### Cơ sở dữ liệu chính PostgreSQL 17
+#### Bộ nhớ đệm tốc độ cao Redis 7
+### Part 06: Phân Tích Nâng Cao SIEM
+#### Công cụ lưu trữ Elasticsearch
+#### Bảng truy vấn chuyên sâu Kibana
+#### Thu gom dữ liệu Filebeat
+#### Tương quan sự kiện APT Correlation
+
+## 📊 Trực Quan Hóa & Điều Hành
+### Part 04: SOC React Dashboard
+#### Giám sát sự cố thời gian thực
+#### Tra cứu chi tiết IP & Lệnh SSH
+#### Xuất báo cáo an ninh PDF/Excel
+#### Giao diện Dark Mode chuyên nghiệp
+### Part 08: Giám Sát Hạ Tầng Grafana
+#### Đo lường tốc độ Request/giây
+#### Trạng thái API & CPU / RAM
+#### Thu thập chỉ số Prometheus
+
+## 🛡️ Bảo Mật & Đóng Gói
+### Part 07: Security Hardening
+#### Tường lửa WAF ModSecurity CRS
+#### Cách ly mạng chống Pivot (Anti-Pivot)
+#### Phân vùng mạng Docker Internal
+### Part 08: Tự Động Hóa Vận Hành
+#### Quản lý định danh Keycloak SSO
+#### Phân quyền theo vai trò RBAC
+#### Triển khai 1 cú click: run.bat
+### Part 09: Hồ Sơ Tài Liệu
+#### Báo cáo nghiên cứu & Kiến trúc ADR
+`;
+
+    // Khởi tạo và vẽ Markmap
+    const { Transformer } = window.markmap;
+    const { Markmap, loadCSS, loadJS } = window.markmap;
+    const transformer = new Transformer();
+    const { root, features } = transformer.transform(markdownData);
+
+    const svg = document.getElementById('mindmap');
+    const mm = Markmap.create(svg, {
+      duration: 500,
+      nodeMinHeight: 22,
+      spacingVertical: 8,
+      spacingHorizontal: 80,
+      paddingX: 16,
+      autoFit: true,
+      color: (node) => {
+        const depthColors = ['#63b3ed', '#48bb78', '#ecc94b', '#ed8936', '#9f7aea', '#ed64a6'];
+        return depthColors[node.depth % depthColors.length];
+      }
+    }, root);
+
+    window.addEventListener('resize', () => {
+      mm.fit();
+    });
+  </script>
+</body>
+</html>

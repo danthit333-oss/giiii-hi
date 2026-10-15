@@ -1,0 +1,381 @@
+{
+  "system_environment": {
+    "host_os": "Windows 11 Pro 64-bit",
+    "wsl2_kernel": "Linux 6.6.x (WSL2 Architecture)",
+    "wsl2_resources": {
+      "memory_allocated": "8GB (8192MB)",
+      "processors_allocated": 6,
+      "config_file": "~/.wslconfig"
+    },
+    "docker_engine_version": "29.2.1",
+    "docker_compose_version": "v2",
+    "host_total_physical_ram": "32GB (33278756 KB)"
+  },
+  "docker_networks": [
+    { "name": "public", "internal": false, "driver": "bridge" },
+    { "name": "lan_ingress", "internal": false, "driver": "bridge" },
+    { "name": "lure", "internal": true, "driver": "bridge" },
+    { "name": "control", "internal": true, "driver": "bridge" },
+    { "name": "data", "internal": true, "driver": "bridge" },
+    { "name": "siem", "internal": true, "driver": "bridge" },
+    { "name": "auth", "internal": true, "driver": "bridge" }
+  ],
+  "docker_volumes": [
+    "postgres_data",
+    "part2_runtime",
+    "elastic_data",
+    "redis_data",
+    "keycloak_data",
+    "filebeat_data",
+    "suricata_logs",
+    "prometheus_data",
+    "grafana_data",
+    "cowrie_state"
+  ],
+  "containers_runtime_status": [
+    {
+      "service": "lan-web-edge",
+      "container_name": "honeypot-research-lan-web-edge-1",
+      "image": "owasp/modsecurity-crs:nginx-alpine",
+      "status": "Up (healthy)",
+      "ports": ["0.0.0.0:8080:8080"],
+      "networks": ["lan_ingress", "lure"]
+    },
+    {
+      "service": "edge",
+      "container_name": "honeypot-research-edge-1",
+      "image": "owasp/modsecurity-crs:nginx-alpine",
+      "status": "Up (healthy)",
+      "ports": ["127.0.0.1:8088:8088", "127.0.0.1:8090:8090"],
+      "networks": ["public", "lure", "control"]
+    },
+    {
+      "service": "ssh-edge",
+      "container_name": "honeypot-research-ssh-edge-1",
+      "image": "haproxy:3.2-alpine",
+      "status": "Up (healthy)",
+      "ports": ["127.0.0.1:2222:2222"],
+      "networks": ["public", "lure"]
+    },
+    {
+      "service": "part2-web",
+      "container_name": "honeypot-research-part2-web-1",
+      "image": "honeypot-research-part2-web",
+      "status": "Up (healthy)",
+      "ports": ["8080/tcp (internal)"],
+      "networks": ["lure"]
+    },
+    {
+      "service": "part2-forwarder",
+      "container_name": "honeypot-research-part2-forwarder-1",
+      "image": "honeypot-research-part3-api:latest",
+      "status": "Up (healthy)",
+      "ports": ["8090/tcp (internal)"],
+      "networks": ["lure", "control"]
+    },
+    {
+      "service": "cowrie",
+      "container_name": "honeypot-research-cowrie-1",
+      "image": "cowrie/cowrie:latest",
+      "status": "Up (healthy)",
+      "ports": ["2222-2223/tcp (internal)"],
+      "networks": ["lure"]
+    },
+    {
+      "service": "cowrie-forwarder",
+      "container_name": "honeypot-research-cowrie-forwarder-1",
+      "image": "honeypot-research-part3-api:latest",
+      "status": "Up (healthy)",
+      "ports": ["8090/tcp (internal)"],
+      "networks": ["lure", "control"]
+    },
+    {
+      "service": "part3-api",
+      "container_name": "honeypot-research-part3-api-1",
+      "image": "honeypot-research-part3-api:latest",
+      "status": "Up (healthy)",
+      "ports": ["8090/tcp (internal)"],
+      "networks": ["control", "siem"]
+    },
+    {
+      "service": "part4-dashboard",
+      "container_name": "honeypot-research-part4-dashboard-1",
+      "image": "honeypot-research-part4-dashboard",
+      "status": "Up (healthy)",
+      "ports": ["80/tcp", "8080/tcp (internal)"],
+      "networks": ["control"]
+    },
+    {
+      "service": "postgres",
+      "container_name": "honeypot-research-postgres-1",
+      "image": "postgres:17-alpine",
+      "status": "Up (healthy)",
+      "ports": ["5432/tcp (internal)"],
+      "networks": ["control"]
+    },
+    {
+      "service": "redis",
+      "container_name": "honeypot-research-redis-1",
+      "image": "redis:7.4-alpine",
+      "status": "Up (healthy)",
+      "ports": ["6379/tcp (internal)"],
+      "networks": ["control"]
+    },
+    {
+      "service": "keycloak",
+      "container_name": "honeypot-research-keycloak-1",
+      "image": "quay.io/keycloak/keycloak:26.4.7",
+      "status": "Up (healthy)",
+      "ports": ["0.0.0.0:8180:8080"],
+      "networks": ["auth", "public"]
+    },
+    {
+      "service": "keycloak-db",
+      "container_name": "honeypot-research-keycloak-db-1",
+      "image": "postgres:17-alpine",
+      "status": "Up (healthy)",
+      "ports": ["5432/tcp (internal)"],
+      "networks": ["auth"]
+    },
+    {
+      "service": "keycloak-setup",
+      "container_name": "honeypot-research-keycloak-setup-1",
+      "image": "quay.io/keycloak/keycloak:26.4.7",
+      "status": "Exited (0)",
+      "ports": [],
+      "networks": ["auth"]
+    },
+    {
+      "service": "elasticsearch",
+      "container_name": "honeypot-research-elasticsearch-1",
+      "image": "docker.elastic.co/elasticsearch/elasticsearch:9.1.4",
+      "status": "Up (healthy)",
+      "ports": ["9200/tcp", "9300/tcp (internal)"],
+      "networks": ["siem"]
+    },
+    {
+      "service": "kibana",
+      "container_name": "honeypot-research-kibana-1",
+      "image": "docker.elastic.co/kibana/kibana:9.1.4",
+      "status": "Up (healthy)",
+      "ports": ["5601/tcp (internal)"],
+      "networks": ["siem"]
+    },
+    {
+      "service": "kibana-oauth2-proxy",
+      "container_name": "honeypot-research-kibana-oauth2-proxy-1",
+      "image": "quay.io/oauth2-proxy/oauth2-proxy:v7.15.3",
+      "status": "Up",
+      "ports": ["127.0.0.1:5601:4180"],
+      "networks": ["siem", "auth", "public"]
+    },
+    {
+      "service": "filebeat",
+      "container_name": "honeypot-research-filebeat-1",
+      "image": "docker.elastic.co/beats/filebeat:9.1.4",
+      "status": "Up",
+      "ports": [],
+      "networks": ["siem"]
+    },
+    {
+      "service": "grafana",
+      "container_name": "honeypot-research-grafana-1",
+      "image": "grafana/grafana:12.1.1",
+      "status": "Up",
+      "ports": ["127.0.0.1:3000:3000"],
+      "networks": ["control", "auth", "public"]
+    },
+    {
+      "service": "prometheus",
+      "container_name": "honeypot-research-prometheus-1",
+      "image": "prom/prometheus:v3.5.0",
+      "status": "Up",
+      "ports": ["9090/tcp (internal)"],
+      "networks": ["control"]
+    },
+    {
+      "service": "prometheus-oauth2-proxy",
+      "container_name": "honeypot-research-prometheus-oauth2-proxy-1",
+      "image": "quay.io/oauth2-proxy/oauth2-proxy:v7.15.3",
+      "status": "Up",
+      "ports": ["127.0.0.1:9090:4180"],
+      "networks": ["control", "auth", "public"]
+    },
+    {
+      "service": "correlation",
+      "container_name": "honeypot-research-correlation-1",
+      "image": "honeypot-research-correlation",
+      "status": "Up",
+      "ports": [],
+      "networks": ["control", "siem"]
+    }
+  ],
+  "web_honeypot_routes": [
+    { "path": "/", "method": "GET", "surface": "Trang chủ Cổng thông tin dịch vụ công" },
+    { "path": "/auth/login", "method": "GET, POST", "surface": "Đăng nhập công dân (bẫy Brute Force & SQLi)" },
+    { "path": "/tra-cuu", "method": "GET", "surface": "Tra cứu thủ tục (bẫy Reflected XSS)" },
+    { "path": "/gop-y", "method": "GET, POST", "surface": "Ý kiến công dân (bẫy Stored XSS)" },
+    { "path": "/ho-so/<case_id>", "method": "GET", "surface": "Xem chi tiết hồ sơ (bẫy IDOR, Canary token)" },
+    { "path": "/download", "method": "GET", "surface": "Tải biểu mẫu (bẫy Path Traversal, giả lập /etc/passwd)" },
+    { "path": "/tich-hop", "method": "GET", "surface": "Tích hợp liên ngành (bẫy Remote File Inclusion)" },
+    { "path": "/upload", "method": "GET, POST", "surface": "Nộp tệp đính kèm (bẫy File Upload, chuyển sang .bin)" },
+    { "path": "/diagnostics", "method": "GET", "surface": "Chẩn đoán kết nối (bẫy Command Injection, trả về www-data)" },
+    { "path": "/xml/import", "method": "GET, POST", "surface": "Nhập dữ liệu biểu mẫu XML (bẫy XXE Injection)" }
+  ],
+  "ingestion_pipelines": [
+    {
+      "name": "Pipeline 1: Web Honeypot",
+      "source": "part_02_WEB_HONEYPOT Flask App",
+      "local_store": "SQLite (honeypot.sqlite3)",
+      "forwarder": "part2-forwarder (scripts/forward_part2.py, polling 2s, in-memory cursor)",
+      "destination": "FastAPI (POST /api/v1/events) -> PostgreSQL 17 (events table)"
+    },
+    {
+      "name": "Pipeline 2: SSH Honeypot",
+      "source": "Cowrie SSH daemon (Port 2222)",
+      "local_store": "JSON (cowrie.json)",
+      "forwarder": "cowrie-forwarder (scripts/forward_cowrie.py, stream follow)",
+      "destination": "FastAPI (POST /api/v1/events) -> PostgreSQL 17 (events table)"
+    },
+    {
+      "name": "Pipeline 3: Network IDS",
+      "source": "Suricata Engine (Custom Rules 9900001-9900010)",
+      "local_store": "JSON (eve.json)",
+      "forwarder": "ids_bridge.collector (--type suricata)",
+      "destination": "FastAPI (POST /api/v1/events) -> PostgreSQL 17 (events table)"
+    },
+    {
+      "name": "Pipeline 4: Machine Learning Sensor",
+      "source": "Npcap / Scapy Packet Sniffer",
+      "processing": "Extract 46 CICIoT2023 features -> XGBoost Predictor",
+      "forwarder": "ids_bridge.live_sensor -> Ingest API Gateway (:8090)",
+      "destination": "FastAPI (POST /api/v1/events) -> PostgreSQL 17 (events table)"
+    }
+  ],
+  "suricata_custom_rules": [
+    { "sid": 9900001, "msg": "HONEYPOT possible SQL injection", "classtype": "web-application-attack" },
+    { "sid": 9900002, "msg": "HONEYPOT reflected XSS payload", "classtype": "web-application-attack" },
+    { "sid": 9900003, "msg": "HONEYPOT path traversal", "classtype": "web-application-attack" },
+    { "sid": 9900004, "msg": "HONEYPOT command injection", "classtype": "web-application-attack" },
+    { "sid": 9900005, "msg": "HONEYPOT XXE payload", "classtype": "web-application-attack" },
+    { "sid": 9900006, "msg": "HONEYPOT remote include attempt", "classtype": "web-application-attack" },
+    { "sid": 9900007, "msg": "HONEYPOT executable upload name", "classtype": "web-application-attack" },
+    { "sid": 9900008, "msg": "HONEYPOT repeated login requests", "classtype": "attempted-admin" },
+    { "sid": 9900009, "msg": "HONEYPOT restricted record IDOR", "classtype": "web-application-attack" },
+    { "sid": 9900010, "msg": "HONEYPOT stored XSS submission", "classtype": "web-application-attack" }
+  ],
+  "machine_learning_model": {
+    "model_name": "xgboost_original",
+    "model_file": "part_01_AI_ML/artifacts/xgboost_original.ubj",
+    "manifest_file": "part_01_AI_ML/artifacts/manifest.json",
+    "feature_count": 46,
+    "feature_standard": "CICIoT2023",
+    "feature_profile": "ciciot2023-live-pcap-v1",
+    "class_names": [
+      "Benign",
+      "BruteForce",
+      "DDoS",
+      "DoS",
+      "Mirai",
+      "Recon",
+      "Spoofing"
+    ]
+  },
+  "correlation_rules": [
+    {
+      "id": "repeated_login_activity",
+      "title": "Một nguồn thử đăng nhập nhiều lần",
+      "type": "threshold",
+      "field": "path",
+      "equals": "/auth/login",
+      "count": 5,
+      "window_seconds": 60,
+      "severity": "high"
+    },
+    {
+      "id": "multi_vector_probe",
+      "title": "Một nguồn thử nhiều kiểu tương tác",
+      "type": "distinct",
+      "field": "vulnerability",
+      "count": 3,
+      "window_seconds": 600,
+      "severity": "critical"
+    },
+    {
+      "id": "upload_then_command",
+      "title": "Tải tệp lên rồi thử nhập lệnh",
+      "type": "sequence",
+      "field": "vulnerability",
+      "values": ["unrestricted_file_upload", "command_injection"],
+      "window_seconds": 900,
+      "severity": "critical"
+    },
+    {
+      "id": "high_request_rate",
+      "title": "Lượng truy cập vào Honeypot tăng cao",
+      "type": "threshold",
+      "field": "event_type",
+      "equals": "request",
+      "count": 50,
+      "window_seconds": 60,
+      "severity": "high"
+    }
+  ],
+  "dashboard_and_api_endpoints": {
+    "dashboard_ui": "http://127.0.0.1:8088/dashboard/",
+    "api_health": "http://127.0.0.1:8088/api-health",
+    "api_interactive_docs": "http://127.0.0.1:8088/api-docs/docs",
+    "api_events_query": "GET http://127.0.0.1:8088/api/v1/events",
+    "api_stats_summary": "GET http://127.0.0.1:8088/api/v1/stats/summary?hours=24",
+    "api_events_csv_export": "GET http://127.0.0.1:8088/api/v1/events/export",
+    "ingest_loopback_gateway": "POST http://127.0.0.1:8090/api/v1/events",
+    "kibana_ui": "http://127.0.0.1:5601/",
+    "grafana_ui": "http://127.0.0.1:3000/",
+    "keycloak_admin": "http://127.0.0.1:8180/admin/"
+  },
+  "keycloak_roles_and_matrix": {
+    "realm": "honeypot",
+    "roles": [
+      {
+        "role_name": "honeypot-viewer",
+        "dashboard_permission": "Xem",
+        "csv_export": false,
+        "grafana_role": "Viewer",
+        "kibana_access": false,
+        "prometheus_access": false
+      },
+      {
+        "role_name": "honeypot-analyst",
+        "dashboard_permission": "Xem",
+        "csv_export": true,
+        "grafana_role": "Viewer",
+        "kibana_access": true,
+        "prometheus_access": false
+      },
+      {
+        "role_name": "honeypot-operator",
+        "dashboard_permission": "Xem",
+        "csv_export": true,
+        "grafana_role": "Editor",
+        "kibana_access": true,
+        "prometheus_access": true
+      },
+      {
+        "role_name": "honeypot-admin",
+        "dashboard_permission": "Xem",
+        "csv_export": true,
+        "grafana_role": "GrafanaAdmin",
+        "kibana_access": true,
+        "prometheus_access": true
+      },
+      {
+        "role_name": "report-export",
+        "dashboard_permission": "Quyền bổ sung xuất báo cáo CSV",
+        "csv_export": true,
+        "grafana_role": "Không đổi",
+        "kibana_access": false,
+        "prometheus_access": false
+      }
+    ]
+  }
+}
